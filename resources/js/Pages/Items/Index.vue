@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import FlashMessage from '@/Components/FlashMessage.vue';
 
 defineProps({
     items: Array
@@ -20,9 +21,11 @@ defineProps({
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <section class="text-gray-600 body-font">
                         <div class="container px-5 py-16 mx-auto">
+                            <FlashMessage />
                             <div class="flex w-full p-4 mx-auto mt-4 lg:w-2/3">
-                                <button
-                                    class="flex px-6 py-2 ml-auto text-white bg-indigo-500 border-0 rounded focus:outline-none hover:bg-indigo-600">Button</button>
+                                <Link as="button" :href="route('items.create')"
+                                    class="flex px-6 py-2 ml-auto text-white bg-indigo-500 border-0 rounded focus:outline-none hover:bg-indigo-600">
+                                商品登録</Link>
                             </div>
                             <div class="w-full mx-auto overflow-auto lg:w-2/3">
                                 <table class="w-full text-left whitespace-no-wrap table-auto">
@@ -44,7 +47,9 @@ defineProps({
                                     </thead>
                                     <tbody>
                                         <tr v-for="item in items" :key="item.id">
-                                            <td class="px-4 py-3 border-b-2 border-gray-200">{{ item.id }}</td>
+                                            <td class="px-4 py-3 border-b-2 border-gray-200">
+                                                <Link :href="route('items.show', { item: item.id})">{{ item.id }}</Link>
+                                            </td>
                                             <td class="px-4 py-3 border-b-2 border-gray-200">{{ item.name }}</td>
                                             <td class="px-4 py-3 border-b-2 border-gray-200">{{ item.price }}</td>
                                             <td class="px-4 py-3 border-b-2 border-gray-200">
