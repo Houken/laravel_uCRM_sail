@@ -2,7 +2,7 @@ version: '3'
 services:
     laravel.test:
         build:
-            context: ./vendor/laravel/sail/runtimes/8.2
+            context: ./docker/8.2
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
@@ -92,7 +92,7 @@ services:
         networks:
             - sail
     selenium:
-        image: seleniarm/standalone-chromium
+        image: selenium/standalone-chrome
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         volumes:
@@ -100,7 +100,7 @@ services:
         networks:
             - sail
     phpmyadmin:
-        image: arm64v8/phpmyadmin
+        image: phpmyadmin/phpmyadmin
         links:
             - mysql:mysql
         ports:

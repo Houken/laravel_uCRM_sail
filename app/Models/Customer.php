@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Purchase;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'name', 'kana', 'tel', 'email', 'postcode', 'address', 'birthday', 'gender', 'memo'
@@ -23,5 +26,10 @@ class Customer extends Model
                                 ->orWhere('tel', 'like', $input . '%');
             }
         }
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
     }
 }
