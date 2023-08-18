@@ -9,7 +9,6 @@ import MicroModal from '@/Components/MicroModal.vue';
 const itemList = ref([])
 
 const props = defineProps({
-    'customers': Array,
     'items': Array,
 })
 
@@ -55,6 +54,8 @@ const storePurchase = () => {
 
     form.post(route('purchases.store'))
 }
+
+const setCustomerId = id => { form.customer_id = id }
 </script>
 
 <template>
@@ -72,21 +73,14 @@ const storePurchase = () => {
                             <form @submit.prevent="storePurchase">
                                 <div class="mx-auto">
                                     <div class="mb-4">
-                                        <div>
+                                        <div class="p-2 full">
                                             <label for="date" class="ml-4 mr-2 text-sm leading-7 text-gray-600">日付</label>
                                             <input type="date" name="date" id="date" v-model="form.date">
                                         </div>
                                         <div class="p-2 full">
                                             <div class="relative">
-                                                <MicroModal />
-                                                <label for="customer"
-                                                    class="ml-4 mr-2 text-sm leading-7 text-gray-600">会員名</label>
-                                                <select name="customer" id="customer" v-model="form.customer_id">
-                                                    <option v-for="customer in customers" :value="customer.id"
-                                                        :key="customer.id">
-                                                        {{ customer.id }} : {{ customer.name }}
-                                                    </option>
-                                                </select>
+                                                <label for="customer" class="ml-4 mr-2 text-sm leading-7 text-gray-600">顧客名</label>
+                                                <MicroModal @update:customerId="setCustomerId" />
                                                 <InputError class="mt-2" :message="form.errors.cutomer" />
                                             </div>
                                         </div>
@@ -132,9 +126,9 @@ const storePurchase = () => {
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="mt-2">
-                                        合計: <p
-                                            class="w-full px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-gray-100 bg-opacity-50 border border-gray-300 rounded outline-none focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200">
+                                    <div class="mt-2 text-end">
+                                        <em class="mr-2">合計:</em><p
+                                            class="float-right w-1/2 px-3 py-1 text-base leading-8 text-gray-700 transition-colors duration-200 ease-in-out bg-gray-100 bg-opacity-50 border border-gray-300 rounded outline-none focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-end">
                                             {{ totalPrice.toLocaleString() }} 円</p>
                                     </div>
                                     <div class="w-full p-2 mt-8">
