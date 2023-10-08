@@ -150,7 +150,6 @@ class PurchaseController extends Controller
         DB::beginTransaction();
 
         try {
-            // dd($request, $purchase);
 
             // 中間テーブルの情報を更新 -> sync()
 
@@ -161,6 +160,9 @@ class PurchaseController extends Controller
 
             $items = [];
 
+            // itemのquantityが変更されている可能性があるので、
+            // requestの各itemからquantityを取り出して
+            // 連想配列に収める
             foreach ($request->items as $item) {
                 $items = $items + [
                     $item['id'] => [
@@ -168,7 +170,8 @@ class PurchaseController extends Controller
                     ]
                 ];
             }
-            // dd($items);
+
+            // purchaseテーブルのitemを更新する
             $purchase->items()->sync($items);
 
             DB::commit();
