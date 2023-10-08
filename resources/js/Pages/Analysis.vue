@@ -30,6 +30,8 @@ const getData = async () => {
         })
             .then(res => {
                 data.data = res.data.data
+                data.labels = res.data.labels
+                data.totals = res.data.totals
                 console.log(res.data)
             })
     } catch (e) {
@@ -54,16 +56,18 @@ const getData = async () => {
                         class="flex flex-col p-16 my-8 mx-auto drop-shadow-sm text-center max-w-[24rem] bg-teal-50">
                         <div class="flex mt-4 text-right align-baseline"><label for="startDate"
                                 class="w-1/4 p-1 mr-1 ">From: </label>
-                            <input type="date" name="startDate" v-model="form.startDate" class="w-3/4">
+                            <input type="date" id="startDate" name="startDate" v-model="form.startDate" class="w-3/4">
                         </div>
                         <div class="flex mt-4 text-right align-baseline"><label for="endDate" class="w-1/4 p-1 mr-1 ">To:
                             </label>
-                            <input type="date" name="endDate" v-model="form.endDate" class="w-3/4">
+                            <input type="date" id="endDate" name="endDate" v-model="form.endDate" class="w-3/4">
                         </div>
                         <button
                             class="flex px-8 py-2 mx-auto mt-4 text-lg text-white bg-indigo-500 border-0 rounded focus:outline-none hover:bg-indigo-600">分析する</button>
                     </form>
-                    <Chart />
+                    <div v-show="data.data">
+                        <Chart :data="data" />
+                    </div>
                     <div v-show="data.data" class="p-4 mx-auto overflow-auto w-80 lg:w-2/3">
                         <table class="w-full text-left whitespace-no-wrap table-auto">
                             <thead>
@@ -80,7 +84,8 @@ const getData = async () => {
                                 <tr v-for="item in data.data" :key="item.date">
                                     <td class="px-4 py-4 text-sm border-b-2 border-gray-200">{{ item.date }}
                                     </td>
-                                    <td class="px-4 py-4 text-sm border-b-2 border-gray-200">{{ item.total.toLocaleString() }} 円
+                                    <td class="px-4 py-4 text-sm border-b-2 border-gray-200">{{ item.total.toLocaleString()
+                                    }} 円
                                     </td>
                                 </tr>
                             </tbody>
