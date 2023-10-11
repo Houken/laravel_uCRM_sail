@@ -1,29 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Services;
 
-use App\Models\Order;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
-class AnalysisController extends Controller
+class DecileService
 {
-    public function index()
+    public static function decile($subQuery)
     {
-
-
-
-        return Inertia::render('Analysis');
-    }
-
-    public function decile()
-    {
-        $startDate = '2023-08-29';
-        $endDate = '2023-08-31';
-
-        $subQuery = Order::betweenDate($startDate, $endDate)
-            ->groupBy('id')
+        $subQuery = $subQuery->groupBy('id')
             ->selectRaw('id, customer_id, customer_name, SUM(subtotal) as totalPerPurchase');
 
         $subQuery = DB::table($subQuery)
@@ -53,16 +38,37 @@ class AnalysisController extends Controller
 
         DB::statement('set @row_num = 0;');
         $subQuery = DB::table($subQuery)
-            ->select(['row_num', 'customer_id', 'customer_name', 'total'])
-            ->selectRaw('NTILE(10) OVER (ORDER BY row_num) as decile');
+            ->select([
+                'row_num',
+                'customer_id',
+                'customer_name',
+                'total'
+            ])
+            ->selectRaw('
+                NTILE(10) OVER (ORDER BY row_num) as decile
+            ');
 
         $subQuery = DB::table($subQuery)
             ->groupBy('decile')
-            ->selectRaw('decile, round(avg(total)) as average, sum(total) as totalPerGroup');
+            ->selectRaw('
+                decile,
+                round(avg(total)) as average,
+                sum(total) as totalPerGroup
+            ');
 
         DB::statement("set @total = {$total} ;");
         $data = DB::table($subQuery)
-            ->selectRaw('decile, average, totalPerGroup, round(100 * totalPerGroup / @total, 1) as totalRatio')
+            ->selectRaw('
+                decile,
+                average,
+                totalPerGroup,
+                round(100 * totalPerGroup / @total, 1) as totalRatio
+            ')
             ->get();
+
+        $labels = $data->pluck('decile');
+        $totals = $data->pluck('totalPerGroup');
+
+        return [$data, $labels, $totals];
     }
 }

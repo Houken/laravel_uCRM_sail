@@ -5,6 +5,7 @@ import { Head, useForm, Link } from '@inertiajs/vue3';
 import axios from 'axios';
 import { reactive, onMounted } from 'vue';
 import Chart from '@/Components/Chart.vue';
+import ResultTable from '@/Components/ResultTable.vue';
 
 onMounted(() => {
     form.startDate = getToday()
@@ -32,6 +33,7 @@ const getData = async () => {
                 data.data = res.data.data
                 data.labels = res.data.labels
                 data.totals = res.data.totals
+                data.type = res.data.type
                 console.log(res.data)
             })
     } catch (e) {
@@ -53,8 +55,20 @@ const getData = async () => {
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">データ分析</div>
                     <form @submit.prevent="getData"
-                        class="flex flex-col p-16 my-8 mx-auto drop-shadow-sm text-center max-w-[24rem] bg-teal-50">
-                        <div class="flex mt-4 text-right align-baseline"><label for="startDate"
+                        class="flex flex-col p-16 my-8 mx-auto drop-shadow-sm text-center max-w-[32rem] bg-teal-50">
+                        <div id="typeRadio">
+                            <label for="typeRadioButtons" class="mr-4">分析方法</label>
+                            <input type="radio" v-model="form.type" name="typeRadioButtons" id="typeRadioButtonDay" value="perDay" checked>
+                            <label for="typeRadioButtonDay" class="mx-2">日別</label>
+                            <input type="radio" v-model="form.type" name="typeRadioButtons" id="typeRadioButtonMonth" value="perMonth">
+                            <label for="typeRadioButtonMonth" class="mx-2">月別</label>
+                            <input type="radio" v-model="form.type" name="typeRadioButtons" id="typeRadioButtonYear" value="perYear">
+                            <label for="typeRadioButtonYear" class="mx-2">年別</label>
+                            <input type="radio" v-model="form.type" name="typeRadioButtons" id="typeRadioButtonDecile" value="decile">
+                            <label for="typeRadioButtonDecile" class="mx-2">デシル分析</label>
+                        </div>
+                        <div class="flex mt-4 text-right align-baseline">
+                            <label for="startDate"
                                 class="w-1/4 p-1 mr-1 ">From: </label>
                             <input type="date" id="startDate" name="startDate" v-model="form.startDate" class="w-3/4">
                         </div>
@@ -67,29 +81,7 @@ const getData = async () => {
                     </form>
                     <div v-show="data.data">
                         <Chart :data="data" />
-                    </div>
-                    <div v-show="data.data" class="p-4 mx-auto overflow-auto w-80 lg:w-2/3">
-                        <table class="w-full text-left whitespace-no-wrap table-auto">
-                            <thead>
-                                <tr>
-                                    <th
-                                        class="px-4 py-4 text-sm font-medium tracking-wider text-gray-900 bg-gray-100 title-font">
-                                        日付</th>
-                                    <th
-                                        class="px-4 py-4 text-sm font-medium tracking-wider text-gray-900 bg-gray-100 title-font">
-                                        金額</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="item in data.data" :key="item.date">
-                                    <td class="px-4 py-4 text-sm border-b-2 border-gray-200">{{ item.date }}
-                                    </td>
-                                    <td class="px-4 py-4 text-sm border-b-2 border-gray-200">{{ item.total.toLocaleString()
-                                    }} 円
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <ResultTable :data="data" />
                     </div>
                 </div>
             </div>
